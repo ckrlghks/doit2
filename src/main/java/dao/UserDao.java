@@ -15,6 +15,7 @@ import logic.CV;
 import logic.Career;
 import logic.Haveskill;
 import logic.LL;
+import logic.Pickjob;
 import logic.Portfolio;
 import logic.Resume;
 import logic.Setting;
@@ -34,19 +35,12 @@ public class UserDao {
 		sqlSession.getMapper(UserMapper.class).passUpdate(user);
 	}
 	public User selectOne(String id) {
-		param.clear();
-		param.put("id", id);
-		return sqlSession.selectOne(NS+"select",param);
+		return sqlSession.getMapper(UserMapper.class).selectUser(id);
 	}
 	public User selectOneByNo(Integer userno) {
 		param.clear();
 		param.put("userno", userno);
 		return sqlSession.selectOne(NS + "select", param);
-	}
-	public User selectOne(int userno) {
-		param.clear();
-		param.put("userno", userno);
-		return sqlSession.selectOne(NS+"select",param);
 	}
 	public void insert(User user) {
 		sqlSession.getMapper(UserMapper.class).insert(user);
@@ -164,5 +158,42 @@ public class UserDao {
 		param.clear();
 		param.put("userno", userno);
 		return sqlSession.selectOne(NS+"selectSetting",param);
+	}
+	public void addResume(Resume rs) {
+		sqlSession.getMapper(UserMapper.class).addResume(rs);
+	}
+	public List<Resume> getResumeListByNo(int userno) {
+		param.clear();
+		param.put("userno", userno);
+		return sqlSession.selectList(NS+"resumeList", param);
+	}
+	public Resume getResumeByNo(int resumeno) {
+		param.clear();
+		param.put("resumeno", resumeno);
+		return sqlSession.selectOne(NS+"resumeSelect", param);
+	}
+	public void delResume(int resumeno) {
+		sqlSession.getMapper(UserMapper.class).delResume(resumeno);
+	}
+	public void updateResume(Resume rs) {
+		sqlSession.getMapper(UserMapper.class).updateResume(rs);
+	}
+	//7.31//
+	public void likeUpdate(Setting st) {
+		sqlSession.getMapper(UserMapper.class).likeUpdate(st);
+	}
+	//8.1//
+	//pickjob//
+	public int selectPickJob(int jobno, int userno) {
+		param.clear();
+		param.put("jobno", jobno);
+		param.put("userno", userno);
+		return sqlSession.selectOne(NS+"selectPickJob",param);
+	}
+	public int pickJobNo() {
+		return sqlSession.getMapper(UserMapper.class).pickJobNo();
+	}
+	public void insertPickJob(Pickjob pickjob) {
+		sqlSession.getMapper(UserMapper.class).insertPickJob(pickjob);
 	}
 }

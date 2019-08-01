@@ -37,8 +37,7 @@ public class PageService {
 	private SettingDao settingDao;
 	
 	public User userSelect(String id) {
-		User user = userDao.selectOne(id);
-		return user;
+		return userDao.selectOne(id);
 	}
 	public User userSelect(Integer userno) {
 	      return userDao.selectOneByNo(userno);
@@ -53,13 +52,31 @@ public class PageService {
 	}
 	
 	public User selectOne(int userno) {
-		return userDao.selectOne(userno);
+		return userDao.selectOneByNo(userno);
 	}
 	
-	public List<CV> getCVlist(int userno) {
-		return userDao.getCVlist(userno);
-	}
-	
+	public List<CV> getCVlist(int userno, int comno) {
+      List<CV> list = userDao.getCVlist(userno);
+      for (CV c : list) {
+         c.setUser(selectOne(userno));
+         c.setPu(selectPU(comno, c.getCvno()));
+      }
+      return list;
+   }
+
+   public List<CV> getCVlist(int userno) {
+      List<CV> list = userDao.getCVlist(userno);
+      for (CV c : list) {
+         c.setUser(selectOne(userno));
+      }
+      return list;
+   }
+   public Pickuser selectPU(int comno, int cvno) {
+	      if (pickuserDao.selectOne(comno, cvno) == null) {
+	         return new Pickuser();
+	      } else
+	         return pickuserDao.selectOne(comno, cvno);
+   }
 	public void userUpdate(User user, HttpServletRequest request) {
 		if (user.getPictureUrl() != null && !user.getPictureUrl().isEmpty()) {
 			uploadFileCreate(user.getPictureUrl(), request, "userImg/");
@@ -70,7 +87,6 @@ public class PageService {
 
 	public void cvImg(CV cv, HttpServletRequest request) {
 		if (cv.getPictureUrl() != null && !cv.getPictureUrl().isEmpty()) {
-			String path = request.getRealPath("/");
 			uploadFileCreate(cv.getPictureUrl(), request, "curriImg/");
 			cv.setPicture(cv.getPictureUrl().getOriginalFilename());
 		}
@@ -248,6 +264,9 @@ public class PageService {
 	public void addCount(int editno) {
 		boardDao.addCount(editno);
 	}
+	public List<ResumeEdit> getSearch(String select, String search) {
+		return boardDao.getSearch(select, search);
+	}
 	/////////
 
 	//맞춤설정//
@@ -261,11 +280,9 @@ public class PageService {
 	      return pickuserDao.list(comno);
 	}
 	public CV getCV(Integer userno, Integer cvno) {
-	      System.out.println("userno" + userno);
 	      return cvDao.selectOne(userno, cvno);
 	}
 	public List<Job> jobselect(Integer comno) {
-	      System.out.println("comno:" + comno);
 	      return jobDao.list(comno);
 	}
 	public Setting getcomset(Integer comno) {
@@ -276,99 +293,122 @@ public class PageService {
 	      settingDao.addset(s);
 	}
 	public List<Setting> getsameuser(int comno) {
-	      Setting comset = settingDao.getcomset(comno);
-	      
-	      String[] comskills = null;
-	      if(comset.getSkill() != null) comskills = comset.getSkill().split(",");
-	      String[] comwelfares = null;
-	      if(comset.getWelfare() != null) comwelfares = comset.getWelfare().split(",");
-	      String[] compluses = null;
-	      if(comset.getPluse() != null) compluses = comset.getPluse().split(",");
-	      String[] comlocs = null;
-	      if(comset.getLocation() != null) comlocs = comset.getLocation().split(",");
-	      String[] comjobs = null;
-	      if(comset.getJob() != null) comjobs = comset.getJob().split(",");
+        Setting comset = settingDao.getcomset(comno);
+        if (comset != null)   
+            System.out.println("스킬: " +comset.getSkill());
+        else {
+           return new ArrayList<Setting>();//만약에 해당 기업의 맞춤설정이 없으면 return 함.
+        }
+        //comset 이 null이 아닌 경우
+        String[] comskills = null;
+        if (comset.getSkill() != null)
+            comskills = comset.getSkill().split(",");
+        String[] comwelfares = null;
+        if(comset.getWelfare() != null) 
+           comwelfares = comset.getWelfare().split(",");
+        
+        String[] compluses = null;
+        if(comset.getPluse() != null)
+           compluses = comset.getPluse().split(",");
+        
+        String[] comlocs = null;
+        if(comset.getLocation() != null) 
+           comlocs = comset.getLocation().split(",");
+        
+        String[] comjobs = null;
+        if(comset.getJob() != null)  
+           comjobs = comset.getJob().split(",");
 
-	      List<Setting> allUserSet = new ArrayList<Setting>();
-	      List<Setting> sameUserSet = new ArrayList<Setting>();
-	      allUserSet = settingDao.getalluser();
-	      
-	      
-	      for (int i = 0; i < allUserSet.size(); i++) {
-	         String[] userskills = allUserSet.get(i).getSkill().split(",");
-	         String[] userwelfares = allUserSet.get(i).getWelfare().split(",");
-	         String[] userpluses = allUserSet.get(i).getPluse().split(",");
-	         String[] userlocs = allUserSet.get(i).getLocation().split(",");
-	         String[] userjobs = allUserSet.get(i).getJob().split(",");
+        List<Setting> allUserSet = new ArrayList<Setting>();
+        List<Setting> sameUserSet = new ArrayList<Setting>();
+        allUserSet = settingDao.getalluser();
+        
+        
+        for (int i = 0; i < allUserSet.size(); i++) {
+           String[] userskills = null;
+           if(allUserSet.get(i).getSkill() != null) userskills = allUserSet.get(i).getSkill().split(",") ;
+           String[] userwelfares = null;
+           if(allUserSet.get(i).getWelfare() != null) userwelfares = allUserSet.get(i).getWelfare().split(",");
+           String[] userpluses = null;
+           if(allUserSet.get(i).getPluse() != null) userpluses = allUserSet.get(i).getPluse().split(",");
+           String[] userlocs = null;
+           if(allUserSet.get(i).getLocation() != null) userlocs = allUserSet.get(i).getLocation().split(",");
+           String[] userjobs = null;
+           if(allUserSet.get(i).getJob() != null) userjobs = allUserSet.get(i).getJob().split(",");
 
-	         for (int j = 0; j < comskills.length; j++) {
-	            for (int k = 0; k < userskills.length; k++) {
-	               if (comskills[j].equals(userskills[k])) {
-	                  if (sameUserSet.contains(allUserSet.get(i)))
-	                     continue;
-	                  else {
-	                     sameUserSet.add(allUserSet.get(i));
-	                     continue;
-	                  }
-	               }
-	            }
-	         }
-	         if(comset.getSkill() != null)
-	         if(comset.getWelfare() != null)
-	         for (int j = 0; j < comwelfares.length; j++) {
-	            for (int k = 0; k < userwelfares.length; k++) {
-	               if (comwelfares[j].equals(userwelfares[k])) {
-	                  if (sameUserSet.contains(allUserSet.get(i)))
-	                     continue;
-	                  else {
-	                     sameUserSet.add(allUserSet.get(i));
-	                     continue;
-	                  }
-	               }
-	            }
-	         }
-	         if(comset.getPluse() != null)
-	         for (int j = 0; j < compluses.length; j++) {
-	            for (int k = 0; k < userpluses.length; k++) {
-	               if (compluses[j].equals(userpluses[k])) {
-	                  if (sameUserSet.contains(allUserSet.get(i)))
-	                     continue;
-	                  else {
-	                     sameUserSet.add(allUserSet.get(i));
-	                     continue;
-	                  }
-	               }
-	            }
-	         }
-	         if(comset.getLocation() != null)
-	         for (int j = 0; j < comlocs.length; j++) {
-	            for (int k = 0; k < userlocs.length; k++) {
-	               if (comlocs[j].equals(userlocs[k])) {
-	                  if (sameUserSet.contains(allUserSet.get(i)))
-	                     continue;
-	                  else {
-	                     sameUserSet.add(allUserSet.get(i));
-	                     continue;
-	                  }
-	               }
-	            }
-	         }
-	         if(comset.getJob() != null)
-	         for (int j = 0; j < comjobs.length; j++) {
-	            for (int k = 0; k < userjobs.length; k++) {
-	               if (comjobs[j].equals(userjobs[k])) {
-	                  if (sameUserSet.contains(allUserSet.get(i)))
-	                     continue;
-	                  else {
-	                     sameUserSet.add(allUserSet.get(i));
-	                     continue;
-	                  }
-	               }
-	            }
-	         }
-	      }
-	      return sameUserSet;
-	}
+           if(comskills != null && userskills != null) {
+              for (int j = 0; j < comskills.length; j++) {
+                 for (int k = 0; k < userskills.length; k++) {
+                    if (comskills[j].equals(userskills[k])) {
+                       if (sameUserSet.contains(allUserSet.get(i)))
+                          continue;
+                       else {
+                          sameUserSet.add(allUserSet.get(i));
+                          continue;
+                       }
+                    }
+                 }
+              }
+           }
+           if(comwelfares != null && userwelfares != null) {
+              for (int j = 0; j < comwelfares.length; j++) {
+                 for (int k = 0; k < userwelfares.length; k++) {
+                    if (comwelfares[j].equals(userwelfares[k])) {
+                       if (sameUserSet.contains(allUserSet.get(i)))
+                          continue;
+                       else {
+                          sameUserSet.add(allUserSet.get(i));
+                          continue;
+                       }
+                    }
+                 }
+              }
+           }
+           if(compluses != null && userpluses != null) {
+              for (int j = 0; j < compluses.length; j++) {
+                 for (int k = 0; k < userpluses.length; k++) {
+                    if (compluses[j].equals(userpluses[k])) {
+                       if (sameUserSet.contains(allUserSet.get(i)))
+                          continue;
+                       else {
+                          sameUserSet.add(allUserSet.get(i));
+                          continue;
+                       }
+                    }
+                 }
+              }
+           }
+           if(comlocs != null && userlocs != null) {
+              for (int j = 0; j < comlocs.length; j++) {
+                 for (int k = 0; k < userlocs.length; k++) {
+                    if (comlocs[j].equals(userlocs[k])) {
+                       if (sameUserSet.contains(allUserSet.get(i)))
+                          continue;
+                       else {
+                          sameUserSet.add(allUserSet.get(i));
+                          continue;
+                       }
+                    }
+                 }
+              }
+           }
+           if(comjobs != null && userjobs != null) {
+              for (int j = 0; j < comjobs.length; j++) {
+                 for (int k = 0; k < userjobs.length; k++) {
+                    if (comjobs[j].equals(userjobs[k])) {
+                       if (sameUserSet.contains(allUserSet.get(i)))
+                          continue;
+                       else {
+                          sameUserSet.add(allUserSet.get(i));
+                          continue;
+                       }
+                    }
+                 }
+              }
+           }
+        }
+        return sameUserSet;
+  }
 	public void updatecomset(Setting s) {
 	      settingDao.updatecomset(s);
 	}
@@ -401,4 +441,83 @@ public class PageService {
 	public void compasschg(Company com) {
 	      companyDao.compasschg(com);
 	}
+	public void addResume(Resume rs) {
+		userDao.addResume(rs);
+	}
+	public List<Resume> getResumeListByNo(int userno) {
+		return userDao.getResumeListByNo(userno);
+	}
+	public int getBoardListCnt() {
+		return boardDao.getBoardListCnt();
+	}
+	public Resume getResumeByNo(int resumeno) {
+		return userDao.getResumeByNo(resumeno);
+	}
+	public void delResume(int resumeno) {
+		userDao.delResume(resumeno);
+	}
+	public void updateResume(Resume rs) {
+		userDao.updateResume(rs);
+	}
+	public List<Job> getJobList() {
+		List<Job> list = jobDao.getJobList();
+		for(Job j : list) {
+			j.setCom(companyDao.selectOneByNo(j.getComno()));
+		}
+		return list;
+	}
+	public List<Job> jobList(String search, String type) {
+		List<Job> list = jobDao.getJobListByStr(search,type);
+		for(Job j : list) {
+			j.setCom(companyDao.selectOneByNo(j.getComno()));
+		}
+		return list;
+	}
+	public List<Job> getjobListBySetting(Setting st) {
+		List<Job> list = jobDao.getJobListBySetting(st);
+		for(Job j : list) {
+			j.setCom(companyDao.selectOneByNo(j.getComno()));
+		}
+		return list;
+	}
+	public int getJobCnt() {
+		return jobDao.getJobCnt();
+	}
+	public int getJobCnt2(String search,String type) {
+		return jobDao.getJobCnt2(search,type);
+	}
+	public void likeUpdate(Setting st) {
+		userDao.likeUpdate(st);
+	}
+	
+	//8.1//
+	//pickjob//
+	public int selectPickJob(int jobno, int userno) {
+		return userDao.selectPickJob(jobno, userno);
+	}
+	public int pickJobNo() {
+		return userDao.pickJobNo();
+	}
+	public void insertPickJob(Pickjob pickjob) {
+		userDao.insertPickJob(pickjob);
+	}
+	//////
+	public void addpickuser(Pickuser pu) {
+	      pickuserDao.insert(pu);
+	   }
+	public int getpumaxno() {
+	      return pickuserDao.puMaxNo();
+	   }
+	public void delpickuser(Pickuser pu) {
+	      pickuserDao.deletepu(pu);
+	   }
+	public void deletepu(Integer comno, Integer cvno) {
+	      Pickuser pu = new Pickuser();
+	      pu.setComno(comno);
+	      pu.setCvno(cvno);
+	      pickuserDao.deletepu(pu);
+	   }
+	public List<CV> getallCV() {
+	      return cvDao.getallCV();
+	   }
 }

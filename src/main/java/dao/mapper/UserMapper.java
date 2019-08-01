@@ -1,5 +1,6 @@
 package dao.mapper;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -9,6 +10,7 @@ import logic.CV;
 import logic.Career;
 import logic.Haveskill;
 import logic.LL;
+import logic.Pickjob;
 import logic.Portfolio;
 import logic.Resume;
 import logic.Setting;
@@ -31,8 +33,8 @@ public interface UserMapper {
 	@Select("select ifnull(max(setno),0) from setting")
 	int likeMaxNo();
 
-	@Insert("insert into setting (setno, comno, userno, skill, welfare, pluse, location, job, minpay, maxpay, education, workform)"
-			+ " values(#{setno},#{comno},#{userno},#{skill},#{welfare},#{pluse},#{location},#{job},#{minpay},#{maxpay},#{education},#{workform})")
+	@Insert("insert into setting (setno, comno, userno, skill, welfare, pluse, location, job, salary, education, workform)"
+			+ " values(#{setno},#{comno},#{userno},#{skill},#{welfare},#{pluse},#{location},#{job},#{salary},#{education},#{workform})")
 	void likeCreate(Setting st);
 
 	@Select("select count(*) from cv")
@@ -84,4 +86,27 @@ public interface UserMapper {
 
 	@Insert("insert into resume (resumeno,cvno,jemokno,rsubject,rcontent,rdate) values(#{resumeno},#{cvno},#{jemokno},#{rsubject},#{rcontent},now())")
 	void insertResume(Resume rs);
+
+	@Select("select * from user where id = #{id}")
+	User selectUser(String id);
+
+	@Insert("insert into resume (resumeno,jemokno,cvno,rsubject,rcontent,rdate,userno) values(#{resumeno},#{jemokno},#{cvno},#{rsubject},#{rcontent},now(),#{userno})")
+	void addResume(Resume rs);
+
+	@Delete("delete from resume where resumeno = #{resumeno}")
+	void delResume(int resumeno);
+
+	@Update("update resume set rsubject = #{rsubject}, rcontent = #{rcontent} where resumeno = #{resumeno}")
+	void updateResume(Resume rs);
+
+	@Update("update setting set skill=#{skill},welfare=#{welfare},pluse=#{pluse},location=#{location},job=#{job},salary=#{salary},education=#{education},workform=#{workform} where setno=#{setno}")
+	void likeUpdate(Setting st);
+
+	//8.1//
+	//pickjob//
+	@Select("select ifnull(max(pickjobno),0) from pickjob")
+	int pickJobNo();
+
+	@Insert("insert into pickjob (pickjobno,userno,jobno,readornot,apply,pick) values(#{pickjobno},#{userno},#{jobno},#{readornot},#{apply},#{pick})")
+	void insertPickJob(Pickjob pickjob);
 }

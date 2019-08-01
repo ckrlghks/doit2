@@ -4,8 +4,8 @@ public class Pickuser {
    private int pickuserno;
    private int comno;
    private int userno; //회원번호
+   private int cvno;
    private int calluser;
-   private int cvno;  //이력서번호
    private User user; // user 와 cv 객체를 한번에 받기위해
    private CV cv;
    
@@ -27,20 +27,20 @@ public class Pickuser {
    public void setUserno(int userno) {
       this.userno = userno;
    }
-   public int getCvno() {
-      return cvno;
-   }
-   public void setCvno(int cvno) {
-      this.cvno = cvno;
-   }
    public int getCalluser() {
       return calluser;
    }
    public void setCalluser(int calluser) {
       this.calluser = calluser;
    }
-   
-   public User getUser() {
+
+   public int getCvno() {
+	return cvno;
+	}
+	public void setCvno(int cvno) {
+		this.cvno = cvno;
+	}
+	public User getUser() {
       return user;
    }
    public void setUser(User user) {
@@ -54,7 +54,7 @@ public class Pickuser {
    }
    @Override
    public String toString() {
-      return "Pickuser [pickuserno=" + pickuserno + ", comno=" + comno + ", userno=" + userno + ", cvno=" + cvno
+      return "Pickuser [pickuserno=" + pickuserno + ", comno=" + comno + ", userno=" + userno
             + ", calluser=" + calluser + "]";
    }
    

@@ -37,8 +37,16 @@ public class Job {
    private String dept;
    private String position;
    private String cdt;
+   private Company com;
+   private String jdate;
    
-   public int getJobno() {
+   public String getJdate() {
+	return jdate;
+	}
+	public void setJdate(String jdate) {
+		this.jdate = jdate;
+	}
+	public int getJobno() {
       return jobno;
    }
    public void setJobno(int jobno) {
@@ -232,17 +240,24 @@ public class Job {
    public void setCdt(String cdt) {
       this.cdt = cdt;
    }
-   @Override
-   public String toString() {
-      return "Job [jobno=" + jobno + ", comno=" + comno + ", subject=" + subject + ", duty=" + duty + ", career="
-            + career + ", employ=" + employ + ", education=" + education + ", major=" + major + ", likecdt="
-            + likecdt + ", language=" + language + ", skill=" + skill + ", gender=" + gender + ", startage="
-            + startage + ", endage=" + endage + ", salary=" + salary + ", industry=" + industry + ", worklocation="
-            + worklocation + ", workday=" + workday + ", worktime=" + worktime + ", startdate=" + startdate
-            + ", enddate=" + enddate + ", receivetype=" + receivetype + ", name=" + name + ", phone=" + phone
-            + ", mobile=" + mobile + ", email=" + email + ", num=" + num + ", field=" + field + ", task=" + task
-            + ", dept=" + dept + ", position=" + position + ", cdt=" + cdt + "]";
-   }
    
+   public Company getCom() {
+	return com;
+   }
+	public void setCom(Company com) {
+		this.com = com;
+	}
+	@Override
+	public String toString() {
+		return "Job [jobno=" + jobno + ", comno=" + comno + ", subject=" + subject + ", duty=" + duty + ", career="
+				+ career + ", employ=" + employ + ", education=" + education + ", major=" + major + ", likecdt="
+				+ likecdt + ", language=" + language + ", skill=" + skill + ", gender=" + gender + ", startage="
+				+ startage + ", endage=" + endage + ", salary=" + salary + ", industry=" + industry + ", worklocation="
+				+ worklocation + ", workday=" + workday + ", worktime=" + worktime + ", startdate=" + startdate
+				+ ", enddate=" + enddate + ", receivetype=" + receivetype + ", name=" + name + ", phone=" + phone
+				+ ", mobile=" + mobile + ", email=" + email + ", num=" + num + ", field=" + field + ", task=" + task
+				+ ", dept=" + dept + ", position=" + position + ", cdt=" + cdt + ", com=" + com + ", jdate=" + jdate
+				+ "]";
+	}
    
 }

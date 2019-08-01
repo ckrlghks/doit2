@@ -8,8 +8,6 @@
 <c:set var="positions" value="${fn:split(job.position,',')}" />
 <c:set var="cdts" value="${fn:split(job.cdt,',')}" />
 <% pageContext.setAttribute("newline", "\n"); %>
-<c:set var="path" value="${pageContext.request.contextPath}"/>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,12 +51,12 @@ function delcheck(){
 </script>
 </head>
 <body>
-<div class="w3-container w3-center" style="min-width: 1000px; "><br>
+<div class="w3-container w3-center" style="max-width: 1000px; margin: auto;"><br>
 <h1>${job.subject }</h1>
 <span style="color:gray; font-size:15px;">${com.comname}</span>
 <br><hr>
 <div id="table-container" class="w3-center w3-table w3-centered">
-<div><img style="width: 200px; height: 250px;" src="${path }/comImg/${sessionScope.logincom.compic }"></div>
+<div><img style="width: 200px; height: 250px;" src="../img/bonobono.jpg"></div>
 <br><br><br>
 
 <div class="title" style="text-align:left; font-weight:bold; font-size:20px;">01. 모집분야 및 자격요건</div><br><br>
@@ -107,7 +105,7 @@ function delcheck(){
 		<table id="5" class="w3-table w3-center">
             <tr>
                <td style="width:30%;" ><div class="w3-panel w3-card w3-center w3-centered" style="margin-top:15%;">
-                     <img style="width: 160px; height: 200px;" src="${path }/comImg/${sessionScope.logincom.compic }">
+                     <img style="width: 160px; height: 200px;" src="../img/bonobono.jpg">
                   </div></td>
                <td  class="w3-center w3-centered" >
                   <table id="6" class="w3-table w3-centered w3-center" >
@@ -142,10 +140,13 @@ function delcheck(){
                   </table></td></tr>
          </table>
 </div><br><br>
+
+
 <a href="updatejobform.shop?comno=${com.comno}&jobno=${job.jobno}" class="w3-button w3-round w3-blue">공고 수정</a>
 <a href="deletejob.shop?comno=${com.comno }&jobno=${job.jobno}&comid=${com.comid}" 
 	class="w3-button w3-round w3-blue"	onclick="return delcheck()">공고 삭제</a>
 <a href="commypage.shop?comid=${com.comid}" class="w3-button w3-round w3-blue">마이페이지</a>
+
 
 <br><br>
 </div>

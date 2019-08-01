@@ -7,42 +7,54 @@ public class Pickjob {
 	private Integer readornot;
 	private Integer apply;
 	private Integer pick;
-	int getPickjobno() {
+	public int getPickjobno() {
 		return pickjobno;
 	}
-	void setPickjobno(int pickjobno) {
+
+	public void setPickjobno(int pickjobno) {
 		this.pickjobno = pickjobno;
 	}
-	int getUserno() {
+
+	public int getUserno() {
 		return userno;
 	}
-	void setUserno(int userno) {
+
+	public void setUserno(int userno) {
 		this.userno = userno;
 	}
-	int getJobno() {
+
+	public int getJobno() {
 		return jobno;
 	}
-	void setJobno(int jobno) {
+
+	public void setJobno(int jobno) {
 		this.jobno = jobno;
 	}
-	Integer getReadornot() {
+
+	public Integer getReadornot() {
 		return readornot;
 	}
-	void setReadornot(Integer readornot) {
+
+	public void setReadornot(Integer readornot) {
 		this.readornot = readornot;
 	}
-	Integer getApply() {
+
+	public Integer getApply() {
 		return apply;
 	}
-	void setApply(Integer apply) {
+
+	public void setApply(Integer apply) {
 		this.apply = apply;
 	}
-	Integer getPick() {
+
+	public Integer getPick() {
 		return pick;
 	}
-	void setPick(Integer pick) {
+
+	public void setPick(Integer pick) {
 		this.pick = pick;
 	}
+
 	@Override
 	public String toString() {
 		return "Pickjob [pickjobno=" + pickjobno + ", userno=" + userno + ", jobno=" + jobno + ", readornot="

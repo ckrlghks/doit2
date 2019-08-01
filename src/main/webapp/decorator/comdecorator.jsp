@@ -3,6 +3,7 @@
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/view/jspHeader.jsp"%>
+<c:set var="path" value="${pageContext.request.contextPath}"/>
 
 <!DOCTYPE html>
 <html>
@@ -63,7 +64,7 @@ body{
                  style="text-decoration:none; font-size:20px;">인재검색</a>
      <a href="recommenduser.shop?comno=${sessionScope.logincom.comno }" class="w3-bar-item w3-hide-small w3-padding-small w3-text-white w3-hover-text-lime"
                  style="text-decoration:none; font-size:20px;">인재추천</a>
-     <a href="#" class="w3-bar-item w3-hide-small w3-padding-small w3-text-white w3-hover-text-lime"
+     <a href="pickeduser.shop?comno=${sessionScope.logincom.comno }" class="w3-bar-item w3-hide-small w3-padding-small w3-text-white w3-hover-text-lime"
                  style="text-decoration:none; font-size:20px;">찜한 인재</a>
     
       <c:choose>
@@ -104,7 +105,7 @@ body{
                     style="text-decoration:none; font-size:20px;">인재검색</a>
         <a href="recommenduser.shop?comno=${sessionScope.logincom.comno }" class="w3-bar-item w3-hide-small w3-padding-small w3-text-white w3-hover-text-lime"
                     style="text-decoration:none; font-size:20px;">인재추천</a>
-        <a href="#" class="w3-bar-item w3-hide-small w3-padding-small w3-text-white w3-hover-text-lime"
+        <a href="pickeduser.shop?comno=${sessionScope.logincom.comno }" class="w3-bar-item w3-hide-small w3-padding-small w3-text-white w3-hover-text-lime"
                     style="text-decoration:none; font-size:20px;">찜한 인재</a>
         <c:choose>
              <c:when test="${empty logincom }">
@@ -135,7 +136,7 @@ body{
       <div class="w3-card w3-round w3-white" style="margin-top:25px;">
          <br>
          <p class="w3-center">
-            <img src="../img/bonobono.jpg" class="w3-circle" style="height:106px;width:106px">
+            <img src="${path }/comImg/${sessionScope.logincom.compic }" class="w3-circle" style="height:106px;width:106px">
         </p>
         <div class="w3-center">
            <div class="w3-text-green">${sessionScope.logincom.comname } 님</div><br>

@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dao.mapper.JobMapper">
-   <select id="list" parameterType="Job" resultType="Job">
+   <select id="list" parameterType="map" resultType="Job">
       select * from job 
         <if test="comno!=null and jobno!=null">
             where comno=#{comno} and jobno=#{jobno}
@@ -11,5 +11,51 @@
         <if test="comno != null and jobno==null">
            where comno = #{comno}
         </if>
+        <if test="comno == null and jobno == null and type != null and search != null">
+           where ${type} like '%${search}%'
+        </if>
+        order by jdate desc
    </select>
-</mapper>
+   <select id="listCnt" parameterType="map" resultType="int">
+   	select count(*) from job
+   	<if test="type != null and search != null">
+   		where ${type} like '%${search}%'
+   	</if>
+   </select>
+   <select id="selectBySetting" resultType="Job" parameterType="map">
+   		select * from job where
+   		<if test="skill != null">
+   			<foreach collection="skill" item="skill" separator="or">
+   				skill like '%${skill}%'
+   			</foreach>
+   		</if>
+   		<if test="pluse != null">
+   			<if test="skill != null">or</if>
+   			<foreach collection="pluse" item="pluse" separator="or">
+   				likecdt like '%${pluse}%'
+   			</foreach>
+   		</if>
+   		<if test="location != null">
+   			<if test="skill != null or pluse != null">or</if>
+   			<foreach collection="location" item="location" separator="or">
+   				worklocation like '%${location}%'
+   			</foreach>
+   		</if>
+   		<if test="job != null">
+   			<if test="skill != null or pluse != null or location != null">or</if>
+   			<foreach collection="job" item="job" separator="or">
+   				field like '%${job}%'
+   			</foreach>
+   		</if>
+   		<if test="salary != null">
+   			<if test="skill != null or pluse != null or location != null or job != null">or</if>
+   			salary = #{salary}
+   		</if>
+   		<if test="workform != null">
+   			<if test="skill != null or pluse != null or location != null or job != null or salary != null">or</if>
+   			<foreach collection="workform" item="workform" separator="or">
+   				employ like '%${workform}%'
+   			</foreach>
+   		</if>
+   </select>
+</mapper>	

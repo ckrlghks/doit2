@@ -11,8 +11,7 @@ public class SettingArray {
 	private String[] pluse;
 	private String[] location;
 	private String[] job;
-	private Integer minpay;
-	private Integer maxpay;
+	private String salary;
 	private String education;
 	private String[] workform;
 
@@ -64,17 +63,11 @@ public class SettingArray {
 	public void setJob(String[] job) {
 		this.job = job;
 	}
-	public Integer getMinpay() {
-		return minpay;
+	public String getSalary() {
+		return salary;
 	}
-	public void setMinpay(Integer minpay) {
-		this.minpay = minpay;
-	}
-	public Integer getMaxpay() {
-		return maxpay;
-	}
-	public void setMaxpay(Integer maxpay) {
-		this.maxpay = maxpay;
+	public void setSalary(String salary) {
+		this.salary = salary;
 	}
 	public String getEducation() {
 		return education;
@@ -92,8 +85,7 @@ public class SettingArray {
 	public String toString() {
 		return "SettingArray [setno=" + setno + ", comno=" + comno + ", userno=" + userno + ", skill="
 				+ Arrays.toString(skill) + ", welfare=" + Arrays.toString(welfare) + ", pluse=" + Arrays.toString(pluse)
-				+ ", location=" + Arrays.toString(location) + ", job=" + Arrays.toString(job) + ", minpay=" + minpay
-				+ ", maxpay=" + maxpay + ", education=" + education + ", workform=" + Arrays.toString(workform) + "]";
+				+ ", location=" + Arrays.toString(location) + ", job=" + Arrays.toString(job) + ", salary=" + salary
+				+ ", education=" + education + ", workform=" + Arrays.toString(workform) + "]";
 	}
-
 }

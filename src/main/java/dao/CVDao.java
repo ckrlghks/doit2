@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -23,4 +24,8 @@ public class CVDao {
       return sqlSession.selectOne(NS + "list", param);
    }
 
+   public List<CV> getallCV() {
+	   param.clear();
+      return sqlSession.selectList(NS + "list", param);
+   }
 }

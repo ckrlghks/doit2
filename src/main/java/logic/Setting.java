@@ -9,8 +9,7 @@ public class Setting {
 	private String pluse;
 	private String location;
 	private String job;
-	private Integer minpay;
-	private Integer maxpay;
+	private String salary;
 	private String education;
 	private String workform;
 	
@@ -62,17 +61,11 @@ public class Setting {
 	public void setJob(String job) {
 		this.job = job;
 	}
-	public Integer getMinpay() {
-		return minpay;
+	public String getSalary() {
+		return salary;
 	}
-	public void setMinpay(Integer minpay) {
-		this.minpay = minpay;
-	}
-	public Integer getMaxpay() {
-		return maxpay;
-	}
-	public void setMaxpay(Integer maxpay) {
-		this.maxpay = maxpay;
+	public void setSalary(String salary) {
+		this.salary = salary;
 	}
 	public String getEducation() {
 		return education;
@@ -89,8 +82,7 @@ public class Setting {
 	@Override
 	public String toString() {
 		return "Setting [setno=" + setno + ", comno=" + comno + ", userno=" + userno + ", skill=" + skill + ", welfare="
-				+ welfare + ", pluse=" + pluse + ", location=" + location + ", job=" + job + ", minpay=" + minpay
-				+ ", maxpay=" + maxpay + ", education=" + education + ", workform=" + workform + "]";
+				+ welfare + ", pluse=" + pluse + ", location=" + location + ", job=" + job + ", salary=" + salary
+				+ ", education=" + education + ", workform=" + workform + "]";
 	}
-
 }

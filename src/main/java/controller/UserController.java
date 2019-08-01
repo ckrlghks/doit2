@@ -40,6 +40,7 @@ import logic.CV;
 import logic.Career;
 import logic.Company;
 import logic.Haveskill;
+import logic.Job;
 import logic.LL;
 import logic.Setting;
 import logic.PageService;
@@ -65,6 +66,19 @@ public class UserController {
 		return null;
 	}
 
+	@GetMapping("userMain")
+	public ModelAndView userMain(HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		User user = (User)session.getAttribute("loginUser");
+		List<Job> jobList = service.getJobList();
+		List<ResumeEdit> rList = service.getResumeList();
+		int rCount = service.getBoardListCnt();
+		mav.addObject("jobList", jobList);
+		mav.addObject("rList", rList);
+		mav.addObject("count", rCount);
+		return mav;
+	}
+	
 	@PostMapping("userEntry")
 	public ModelAndView userEntry(@Valid User user, BindingResult bindResult, Company company) {
 		ModelAndView mav = new ModelAndView();
@@ -112,7 +126,7 @@ public class UserController {
 	@RequestMapping("logout")
 	public String logout(HttpSession session) {
 		session.invalidate();
-		return "redirect:login.shop";
+		return "redirect:userLogin.shop";
 	}
 
 	@RequestMapping("userMyPage")
@@ -122,10 +136,12 @@ public class UserController {
 		User dbUser = service.selectOne(userno);
 		List<CV> cv = new ArrayList<CV>();
 		cv = service.getCVlist(dbUser.getUserno());
+		List<Resume> rs = service.getResumeListByNo(dbUser.getUserno());
 		
 		
 		mav.addObject("cv", cv);
 		mav.addObject("user", dbUser);
+		mav.addObject("rs",rs);
 		return mav;
 	}
 
@@ -144,19 +160,18 @@ public class UserController {
 			fstr = str[1].split(",");
 			mav.addObject(str[0], fstr);
 		}
-		
 		int userno = Integer.parseInt(request.getParameter("userno"));
 		Setting st = service.getSetting(userno);
 		mav.addObject("setting", st);
-		
 		return mav;
 	}
 
-	@PostMapping("setting")
-	public ModelAndView setting(SettingArray setting, HttpSession session) {
+	@PostMapping(value = { "setting", "settingUpdate" })
+	public ModelAndView setting(SettingArray setting, HttpSession sessionm, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView(); // 맞춤 공고 페이지 아직 없어서 마이페이지로 일단 보냄.
 		Setting st = new Setting();
-
+		String[] p = request.getServletPath().split("/");
+		
 		String skill = "";
 		String welfare = "";
 		String pluse = "";
@@ -166,12 +181,14 @@ public class UserController {
 
 		int length;
 		int i;
-
-		int maxNo = service.likeMaxNo();
-		st.setSetno(maxNo + 1);
-		st.setUserno(setting.getUserno());
-		st.setComno(null);
-
+		
+		if(p[2].equals("setting.shop")) {
+			int maxNo = service.likeMaxNo();
+			st.setSetno(maxNo + 1);
+			st.setUserno(setting.getUserno());
+			st.setComno(0);
+		}
+		
 		if (setting.getSkill() != null) {
 			length = setting.getSkill().length;
 			i = 1;
@@ -261,29 +278,25 @@ public class UserController {
 			}
 		} else
 			st.setWorkform(null);
-
-		if (setting.getMinpay() != null)
-			st.setMinpay(setting.getMinpay());
-		else
-			st.setMinpay(null);
-
-		if (setting.getMaxpay() != null)
-			st.setMaxpay(setting.getMaxpay());
-		else
-			st.setMaxpay(null);
-
+		
 		st.setEducation(setting.getEducation());
-
-		service.likeCreat(st);
-
-		mav.setViewName("redirect:userMyPage.shop?userno="+setting.getUserno());
+		
+		if(p[2].equals("setting.shop"))
+			service.likeCreat(st);
+		else {
+			st.setUserno(setting.getUserno());
+			service.likeUpdate(st);
+		}
+		//발표하는 날 주소 바꾸기!!!
+		mav.setViewName("redirect:http://localhost:8080/doIT/job/settingJob.shop?userno="+setting.getUserno());
 		return mav;
-	}
+	}	
 
 	@RequestMapping(value = { "userInfo", "editUser" })
 	public ModelAndView userInfo(String id) {
 		ModelAndView mav = new ModelAndView();
 		User user = service.userSelect(id);
+		user.setEmail(CipherUtil.decrypt(user.getEmail(), user.getPass()));
 		mav.addObject("user", user);
 		return mav;
 	}
@@ -313,6 +326,8 @@ public class UserController {
 	@PostMapping("userUpdate")
 	public ModelAndView userUpdate(User user, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView("user/userInfo");
+		User dbUser = service.userSelect(user.getId());
+		user.setEmail(CipherUtil.encrypt(user.getEmail(), dbUser.getPass()));
 		service.userUpdate(user, request);
 		return mav;
 	}
@@ -366,18 +381,14 @@ public class UserController {
 	@PostMapping("curriculum")
 	public ModelAndView curriculum(CV cv, HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
-		cv.setCvno(service.getCvno());
+		cv.setCvno(service.getCvno()+1);
 
 		service.cvImg(cv, request); // 사진저장
-
-		System.out.println(cv.toString());
 
 		if (cv.getCareer() != null)
 			for (Career cr : cv.getCareer()) {
 				cr.setCareerno(service.getCareerno());
 				cr.setCvno(cv.getCvno());
-				System.out.println(cr.toString());
-				System.out.println("career 데이터베이스에 저장!");
 				try {
 					service.insertCareer(cr);
 				} catch (Exception e) {
@@ -388,8 +399,6 @@ public class UserController {
 			for (Activity ac : cv.getActivity()) {
 				ac.setAcno(service.getAcno());
 				ac.setCvno(cv.getCvno());
-				System.out.println(ac.toString());
-				System.out.println("activity 데이터베이스에 저장!");
 				try {
 					service.insertActivity(ac);
 				} catch (Exception e) {
@@ -400,8 +409,6 @@ public class UserController {
 			for (LL ll : cv.getLl()) {
 				ll.setNo(service.getNo());
 				ll.setCvno(cv.getCvno());
-				System.out.println(ll.toString());
-				System.out.println("ll 데이터베이스에 저장!");
 				try {
 					service.insertLL(ll);
 				} catch (Exception e) {
@@ -412,8 +419,6 @@ public class UserController {
 			for (Haveskill hs : cv.getHaveskill()) {
 				hs.setHaveno(service.getHaveno());
 				hs.setCvno(cv.getCvno());
-				System.out.println(hs.toString());
-				System.out.println("haveskill 데이터베이스에 저장!");
 				try {
 					service.insertHaveskill(hs);
 				} catch (Exception e) {
@@ -424,8 +429,6 @@ public class UserController {
 			for (Portfolio pf : cv.getPortfolio()) {
 				pf.setPortno(service.getPortno());
 				pf.setCvno(cv.getCvno());
-				System.out.println(pf.toString());
-				System.out.println("portfolio 데이터베이스에 저장!");
 				try {
 					service.insertPortfolio(pf);
 				} catch (Exception e) {
@@ -436,8 +439,6 @@ public class UserController {
 			for (Resume rs : cv.getResume()) {
 				rs.setResumeno(service.getResumeno());
 				rs.setCvno(cv.getCvno());
-				System.out.println(rs.toString());
-				System.out.println("resume 데이터베이스에 저장!");
 				try {
 					service.insertResume(rs);
 				} catch (Exception e) {
@@ -462,8 +463,6 @@ public class UserController {
 		cv.setHaveskill(service.getHaveskill(cvno));
 		cv.setPortfolio(service.getPortfolio(cvno));
 		cv.setResume(service.getResume(cvno));
-
-		System.out.println(cv);
 
 		mav.addObject("cv", cv);
 		return mav;
@@ -495,7 +494,6 @@ public class UserController {
 		String from = "xoalas55@gmail.com";
 		String pass = "rlaxo7080!";
 		String to1 = email;
-		System.out.println(email);
 		String content = "인증번호 [ " + authNum + "]";
 		try {
 			Properties props = new Properties();
@@ -536,5 +534,50 @@ public class UserController {
 			buffer.append(n);
 		}
 		return buffer.toString();
+	}
+	
+	//자소서//
+	@PostMapping("saveResume")
+	public ModelAndView saveResume(Resume rs) {
+		ModelAndView mav = new ModelAndView();
+		rs.setResumeno(service.getResumeno());
+		rs.setCvno(null);
+		rs.setJemokno(null);
+		rs.setRcontent(rs.getRcontent().replaceAll("\r\n", "<br>"));
+		service.addResume(rs);
+		mav.setViewName("redirect:userMyPage.shop?userno="+rs.getUserno());
+		return mav;
+	}
+	
+	@RequestMapping(value= { "resumeDetail" , "resumeUpdateForm" })
+	public ModelAndView resume(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView();
+		int resumeno = Integer.parseInt(request.getParameter("resumeno"));
+		Resume resume = service.getResumeByNo(resumeno);
+		String path = request.getServletPath();
+		String[] realPath = path.split("/");
+		if(realPath[2].equals("resumeUpdateForm.shop"))
+			resume.setRcontent(resume.getRcontent().replaceAll("<br>", "\r\n"));
+		mav.addObject("resume", resume);
+		return mav;
+	}
+	
+	@RequestMapping("resumeDel")
+	public ModelAndView resumeDel(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView();
+		int resumeno = Integer.parseInt(request.getParameter("resumeno"));
+		int userno = Integer.parseInt(request.getParameter("userno"));
+		service.delResume(resumeno);
+		mav.setViewName("redirect:userMyPage.shop?userno="+userno);
+		return mav;
+	}
+	
+	@PostMapping("resumeUpdate")
+	public ModelAndView resumeUpdate(Resume rs) {
+		ModelAndView mav = new ModelAndView();
+		rs.setRcontent(rs.getRcontent().replaceAll("\r\n", "<br>"));
+		service.updateResume(rs);
+		mav.setViewName("redirect:userMyPage.shop?userno="+rs.getUserno());
+		return mav;
 	}
 }
